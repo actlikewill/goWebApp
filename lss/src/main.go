@@ -1,18 +1,35 @@
 package main
 
 import (
+	"database/sql"
 	"fileserver/src/controller"
 	"fileserver/src/middleware"
+	"fileserver/src/model"
+	"fmt"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
 	templates := populateTemplates()
+	db := connectToDatabase()
+	defer db.Close()
 	controller.Startup(templates)	
 	http.ListenAndServe(":8000", &middleware.TimeoutMiddlware{new(middleware.GzipMiddleware)})
+}
+
+func connectToDatabase() *sql.DB {	
+	db, err := sql.Open("postgres", "postgres://lss:lss@localhost:5433/lss?sslmode=disable")
+	if err != nil {
+		log.Fatalln(fmt.Errorf("Unable to connect to database: %v", err))
+	}
+	model.SetDatabase(db)
+	return db
 }
 
 func populateTemplates() map[string]*template.Template {

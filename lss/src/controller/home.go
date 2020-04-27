@@ -1,12 +1,12 @@
 package controller
 
 import (
+	"fileserver/src/model"
 	"fileserver/src/viewmodel"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
-	"time"
 )
 
 type home struct {
@@ -36,10 +36,13 @@ func (h home) handleLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		email := r.Form.Get("email")
 		password := r.Form.Get("password")
-		if email == "test@gmail.com" && password == "password" {
+		if user, err := model.Login(email, password); err == nil {
+			log.Printf("User has successfully logged in: %v\n", user)
 			http.Redirect(w, r, "/home", http.StatusTemporaryRedirect)
 			return
 		} else {
+
+			log.Printf("Failed to login in user with email: %v\n error was %v\n", email, err)
 			vm.Email = email
 			vm.Password = password
 		}

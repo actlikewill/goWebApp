@@ -13,6 +13,7 @@ import (
 	"os"
 
 	_ "github.com/lib/pq"
+	_ "net/http/pprof"
 )
 
 func main() {
@@ -20,6 +21,7 @@ func main() {
 	db := connectToDatabase()
 	defer db.Close()
 	controller.Startup(templates)	
+	go http.ListenAndServe(":8080", nil)
 	http.ListenAndServeTLS(":8000", "cert.pem", "key.pem", &middleware.TimeoutMiddlware{new(middleware.GzipMiddleware)})
 }
 

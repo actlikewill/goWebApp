@@ -2,10 +2,11 @@ package controller
 
 import (
 	"fileserver/src/viewmodel"
-	"html/template"
-	"net/http"
 	"fmt"
+	"html/template"
 	"log"
+	"net/http"
+	"time"
 )
 
 type home struct {
@@ -22,7 +23,7 @@ func (h home) registerRoutes() {
 
 func (h home) handleHome(w http.ResponseWriter, r *http.Request) {
 	vm := viewmodel.NewHome()
-	fmt.Println(r.Context())
+	w.Header().Add("Content-Type", "text/html")
 	h.homeTemplate.Execute(w, vm)
 }
 
